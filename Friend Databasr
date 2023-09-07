@@ -1,0 +1,128 @@
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+// Class representing a friend
+class Friend {
+    private String name;
+    private String email;
+    private ActivityLog log;
+
+    // Constructor to initialize a friend with a name and email
+    public Friend(String name, String email) {
+        this.name = name;
+        this.email = email;
+        this.log = new ActivityLog(name + "_activity.txt");
+    }
+
+    // Method to add an activity to the friend's log
+    public void addActivity(String activity) {
+        log.add(activity);
+    }
+
+    // String representation of a friend
+    @Override
+    public String toString() {
+        return "Friend: " + name + " (Email: " + email + ")";
+    }
+}
+
+// Class representing an activity log for a friend
+class ActivityLog {
+    private String filename;
+    private List<String> activities;
+
+    // Constructor to create an activity log for a friend
+    public ActivityLog(String filename) {
+        this.filename = filename;
+        activities = new ArrayList<>();
+    }
+
+    // Method to add an activity to the log and save it to a file
+    public void add(String activity) {
+        activities.add(activity);
+        saveToFile(activity);
+    }
+
+    // Method to save an activity to the log file
+    private void saveToFile(String activity) {
+        try (FileWriter writer = new FileWriter(filename, true)) {
+            writer.write(activity + "\n");
+        } catch (IOException e) {
+            System.err.println("Error writing to the log file: " + filename);
+        }
+    }
+
+    // Method to display the activities in the log
+    public void displayActivities() {
+        System.out.println("Activity Log for " + filename + ":");
+        for (String activity : activities) {
+            System.out.println(activity);
+        }
+    }
+}
+
+// Class representing a list of friends
+class FriendList {
+    private List<Friend> friends;
+
+    // Constructor to initialize a list of friends
+    public FriendList() {
+        friends = new ArrayList<>();
+    }
+
+    // Method to add a friend to the list
+    public void addFriend(Friend friend) {
+        friends.add(friend);
+    }
+
+    // Method to remove a friend from the list
+    public void removeFriend(String name) {
+        friends.removeIf(friend -> friend.toString().contains(name));
+    }
+
+    // Method to find a friend by name
+    public Friend findFriendByName(String name) {
+        for (Friend friend : friends) {
+            if (friend.toString().contains(name)) {
+                return friend;
+            }
+        }
+        return null;
+    }
+
+    // Method to display the list of friends
+    public void displayFriends() {
+        System.out.println("My Friends:");
+        for (Friend friend : friends) {
+            System.out.println(friend);
+        }
+    }
+}
+
+// Main application class
+public class ProfessionalFriendApp {
+    public static void main(String[] args) {
+        // Create a list of friends
+        FriendList myFriends = new FriendList();
+
+        // Add friends to the list
+        myFriends.addFriend(new Friend("Alice", "alice@example.com"));
+        myFriends.addFriend(new Friend("Bob", "bob@example.com"));
+        myFriends.addFriend(new Friend("Carol", "carol@example.com"));
+
+        // Record activities with friends
+        myFriends.findFriendByName("Alice").addActivity("Had lunch with Bob.");
+        myFriends.findFriendByName("Bob").addActivity("Watched a movie with Carol.");
+        myFriends.findFriendByName("Carol").addActivity("Went shopping with Alice.");
+
+        // Display the list of friends and their activities
+        myFriends.displayFriends();
+
+        // Remove a friend from the list
+        myFriends.removeFriend("Alice");
+        System.out.println("\nAfter saying goodbye to Alice:");
+        myFriends.displayFriends();
+    }
+}
